@@ -87,7 +87,8 @@ export const getReferrer = isWorker() ?
 // via a file:// URL.
 const isFileURL = url => /^file:/.test(url) || (/^file:/.test(getReferrer()) && !/^\w+:/.test(url));
 
-function makeFetchRequest(requestParameters: RequestParameters, callback: ResponseCallback<any>): Cancelable {
+
+var _doMakeFetchRequest = function(requestParameters: RequestParameters, callback: ResponseCallback<any>): Cancelable {
     const controller = new window.AbortController();
     const request = new window.Request(requestParameters.url, {
         method: requestParameters.method || 'GET',
@@ -177,6 +178,14 @@ function makeFetchRequest(requestParameters: RequestParameters, callback: Respon
         aborted = true;
         if (!complete) controller.abort();
     }};
+}
+
+export const setFetchRequest = function(func) {
+    _doMakeFetchRequest = func
+}
+
+function makeFetchRequest(requestParams: RequestParameters, callback: ResponseCallback<any>): Canelable {
+    _doMakeFetchRequest(requestParams, callback)
 }
 
 function makeXMLHttpRequest(requestParameters: RequestParameters, callback: ResponseCallback<any>): Cancelable {
